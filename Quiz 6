@@ -1,0 +1,60 @@
+ქვიზი 6.
+გააკეთეთ ორი ფუნქცია. ერთი მათგანი დაბეჭდავს ნამდვილი რიცხვების ვექტორს რამდენიმე სვეტად - ვექტორი და სვეტების რაოდენობა პარამეტრებია. შეეცადეთ, პარამეტრების გადაცემა იყოს ეფექტური და უსაფრთხო. 
+მეორე ფუნქცია პარამეტრებად მიიღებს რადიუსს, ხოლო ფართობსა და პერიმეტრს რეფერენსით. 
+მთავარ ფუნქციაში, ერთ ვექტორში ფაილიდან “Radiuses.txt” ჩაწერეთ რიცხვები. ორ სხვა ვექტორში (ფართობებისა და პერიმეტრებისთვის გაკეთებულებში), თქვენი ფუნქციის გამოყენებით ჩაწერეთ ამ რადიუსების შესაბამისი ფართობები და პერიმეტრები. 
+პირველი ფუნქციის გამოყენებით დაბეჭდეთ სამივე ვექტორი. შემდეგ, გაარკვიეთ და დაბეჭდეთ ფართობების საშუალო არითმეტიკული და აგრეთვე თუ რამდენი პერიმეტრია 100-ზე მეტი. სადაც შესაძლებელია, გამოიყენეთ ბიბლიოთეკის ფუნქციები. პრედიკატი გააკეთეთ ლამბდა ფუნქციით. 
+
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <numeric>
+#include <algorithm>
+using namespace std;
+void vectorPrint(const vector<double> &v,const int &row){
+    for(int i = 0; i < v.size(); i++){
+        if(i%row == 0){
+            if(i != 0){
+                cout<<endl;
+            }
+        }
+        cout<<v[i]<<"\t";
+    }
+    cout<<endl;
+}
+void secondFunction(const double &radius, double &area, double &peremeter){
+    area = acos(-1)*radius*radius;
+    peremeter = 2*(acos(-1)*radius);
+}
+int main(){
+    vector<double> data, area_vector, peremeter_vector;
+    double n, avg, sum_of_area=0;
+    fstream ifs("Radiuses.txt");
+    while(ifs>>n){
+        data.push_back(n);
+    }
+    for(double radius: data){
+        double area, peremeter;
+        secondFunction(radius,area,peremeter);
+        area_vector.push_back(area);
+        peremeter_vector.push_back(peremeter);
+    }
+    sum_of_area = accumulate(area_vector.begin(), area_vector.end(), 0);
+    auto lambda = [](const double &temp){
+        return temp>100;
+    };
+    int more_thran_hundreed = count_if(peremeter_vector.begin(), peremeter_vector.end(), lambda);
+    avg = sum_of_area/area_vector.size();
+    cout<<"ფაილიდან წამოღებული ვექტორები: "<<endl;
+    vectorPrint(data, 3);
+    cout<<endl;
+    cout<<"დამუშავებული ვექტორების ფართობიები: "<<endl; 
+    vectorPrint(area_vector, 3);
+    cout<<endl;
+    cout<<"დამუშავებული ვექტორების პერიმეტრები: "<<endl;
+    vectorPrint(peremeter_vector, 3);
+    cout<<"ფართობების საშუალო არაითმეტიკული: "<<avg<<endl;
+    cout<<"პერიმეტრების რაოდენობა, რომელიც მეტია 100_ზე: "<<more_thran_hundreed;
+    return 0;
+}
