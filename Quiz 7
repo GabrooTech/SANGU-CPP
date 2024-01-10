@@ -16,3 +16,58 @@ Mexico		55228202		128455563		73227361
 შექმენით კლასი, რომლის ველები შეესაბამება სვეტებს და ერთი ობიექტი სრულად აღწერს მონაცემების ერთ სტრიქონს. 
 შემდეგ, შექმენით ამ კლასის ობიექტების ვექტორი. სხვა ვექტორში შეინახეთ ქვექნების მოსახლეობის ზრდის პროცენტული მაჩვენებლები მოცემული 10 წლის განმავლობაში. სტანდარტული ბიბლიოთეკის ან შუალედების ბიბლიოთეკის ალგორითმების გამოყენებით  გაარკვიეთ რომელ ქვეყნებს ჰქონდათ პროცენტული ზრდის უდიდესი და უმცირესი მაჩვენებელი და გამობეჭდეთ მათი მონაცემები.
 შემდეგ, დაახარისხეთ ეს ობიექტები 2023 წლის მოსახლეობის რაოდენობის მიხედვით და გამობეჭდეთ ქვეყების სახელები და მოსახლეობის რაოდენობები 2023 წელს. 
+
+
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+
+class Countries{    
+    public:
+    string country;
+    unsigned long long old_population, present_population, differance;
+};
+int main()
+{
+    vector <Countries> main_vector;
+    vector <pair<string, double>>  growth_vector, present_vector;
+    pair<string, unsigned long long> print_row;
+    pair<string, double> biggest, lowest;
+    double n;
+    Countries tmp;
+    string skipper;
+    fstream ifs("Countries.txt");
+    getline(ifs, skipper);
+    while(ifs >> tmp.country >> tmp.old_population >> tmp.present_population >> tmp.differance){
+        main_vector.push_back(tmp);
+    }
+    for(auto e:main_vector){
+        n = (double)((double)e.differance/(double)e.old_population)*100;
+        pair<string, double> v(e.country, (double)n);
+        pair<string, unsigned long long> present_inner_vector(e.country, e.present_population);
+        growth_vector.push_back(v);
+        present_vector.push_back(present_inner_vector);
+    }
+    auto isBiggest = [](const pair<string, double> &a,const pair<string, double> &b){
+        return a.second < b.second;
+    };
+    auto isLowest = [](const pair<string, double> &a,const pair<string, double> &b){
+        return a.second < b.second;
+    };
+    auto rowSort = [](const pair<string, unsigned long long> &a,const pair<string, unsigned long long> &b){
+        return a.second > b.second;
+    };
+    sort(present_vector.begin(), present_vector.end(), rowSort);
+    biggest = *max_element(growth_vector.begin(), growth_vector.end(), isBiggest);
+    lowest = *min_element(growth_vector.begin(), growth_vector.end(), isLowest);
+    cout<<"უდიდესი ზრდა განიცადა: "<<biggest.first<<"_მ "<<biggest.second<<"_ით"<<endl;
+    cout<<"უმცირესი ზრდა განიცადა: "<<lowest.first<<"_მ "<<lowest.second<<"_ით"<<endl;
+    for(auto i:present_vector){
+        cout<<i.first<<" "<<i.second<<endl;
+    }
+    return 0;
+}
